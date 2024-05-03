@@ -14,5 +14,44 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('home');
 });
+
+
+Route::get('/admin/statistiques' , function()
+{
+    return view('admin.statistiques');
+});
+
+Route::get('/admin/category' , function()
+{
+    return view('admin.categories');
+});
+
+
+Route::get('/admin/immobilier' , function()
+{
+    return view('admin.immobilier');
+});
+
+Route::get('/admin/users' , function()
+{
+    return view('admin.users');
+});
+
+Route::get('/admin/test' , function()
+{
+    return view('admin.test');
+});
+
+Route::get('/Auth/login' , function()
+{
+    return view('Auth.login');
+});
+
+Route::get('/client_Portfolio' , function()
+{
+    return view('client.Portfolio');
+});
+
+
