@@ -1,29 +1,54 @@
 <?php
 
+
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Http\Requests\LoginRequest;
+use App\Repositories\UserRepositoryInterface;
 
 class LoginController extends Controller
 {
-    public function show(){
+    protected $userRepository;
+
+    public function __construct(UserRepositoryInterface $userRepository)
+    {
+        $this->userRepository = $userRepository;
+    }
+
+    public function show()
+    {
         return view('login');
     }
 
     public function login(LoginRequest $request)
-{
-    $incomingFields = $request->validated();
-    if (auth()->attempt(['email' => $incomingFields['loginemail'], 'password' => $incomingFields['loginpassword']])) {
-        $request->session()->regenerate();
-        return view('tasks');
-    } else {
-        return back()->withErrors(['login' => 'Invalid login credentials']);
+    {
+        $incomingFields = $request->validated();
+        
+        $user = $this->userRepository->findByEmail($incomingFields['loginemail']);
+        
+
+
+        if ($user && auth()->attempt(['email' => $incomingFields['loginemail'], 'password' => $incomingFields['loginpassword']])) {
+            $request->session()->regenerate();
+
+            if ($user->role === 'client') {
+                return redirect('/home');
+            } elseif ($user->role === 'renter') {
+                return redirect('/dashboard');
+            } elseif ($user->role === 'admin') {
+                return redirect('/statistique');
+            } else {
+                auth()->logout();
+                return redirect('/login')->with('error', 'Invalid role');
+            }
+        } else {
+            return back()->withErrors(['login' => 'Invalid login credentials']);
+        }
     }
-}
 
-
-    public function logout(){
+    public function logout()
+    {
         auth()->logout();
         return redirect('/login');
     }
